@@ -26,6 +26,8 @@ def anchor_targets_bbox(
     positive_overlap=0.5,
     **kwargs
 ):
+    # print('annotations: ', annotations)
+    # print('num_classes: ', num_classes)
     anchors = anchors_for_shape(image_shape, **kwargs)
 
     # label: 1 is positive, 0 is negative, -1 is dont care

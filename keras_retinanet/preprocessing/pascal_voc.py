@@ -27,27 +27,54 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+# voc_classes = {
+#     'aeroplane'   : 0,
+#     'bicycle'     : 1,
+#     'bird'        : 2,
+#     'boat'        : 3,
+#     'bottle'      : 4,
+#     'bus'         : 5,
+#     'car'         : 6,
+#     'cat'         : 7,
+#     'chair'       : 8,
+#     'cow'         : 9,
+#     'diningtable' : 10,
+#     'dog'         : 11,
+#     'horse'       : 12,
+#     'motorbike'   : 13,
+#     'person'      : 14,
+#     'pottedplant' : 15,
+#     'sheep'       : 16,
+#     'sofa'        : 17,
+#     'train'       : 18,
+#     'tvmonitor'   : 19
+# }
+
 voc_classes = {
-    'aeroplane'   : 0,
-    'bicycle'     : 1,
-    'bird'        : 2,
-    'boat'        : 3,
-    'bottle'      : 4,
-    'bus'         : 5,
-    'car'         : 6,
-    'cat'         : 7,
-    'chair'       : 8,
-    'cow'         : 9,
-    'diningtable' : 10,
-    'dog'         : 11,
-    'horse'       : 12,
-    'motorbike'   : 13,
-    'person'      : 14,
-    'pottedplant' : 15,
-    'sheep'       : 16,
-    'sofa'        : 17,
-    'train'       : 18,
-    'tvmonitor'   : 19
+    'none_of_the_above' : 0,
+    '87_88_89' : 1,
+    '82_83_94' : 2,
+    '82_83_93' : 3,
+    '82_83_92' : 4,
+    '82_83_91' : 5,
+    '82_83_90' : 6,
+    '82_83_89' : 7,
+    '82_83_88' : 8,
+    '82_83_87' : 9,
+    '82_83_86' : 10,
+    '82_83_85' : 11,
+    '82_83_84' : 12,
+    '77_79_81' : 13,
+    '77_79_80' : 14,
+    '66_67_76' : 15,
+    '66_67_75' : 16,
+    '66_67_74' : 17,
+    '66_67_73' : 18,
+    '66_67_72' : 19,
+    '66_67_71' : 20,
+    '66_67_70' : 21,
+    '66_67_69' : 22,
+    '66_67_68' : 23
 }
 
 
@@ -113,8 +140,15 @@ class PascalVocGenerator(Generator):
         return read_image_bgr(path)
 
     def __parse_annotation(self, element):
-        truncated = _findNode(element, 'truncated', parse=int)
-        difficult = _findNode(element, 'difficult', parse=int)
+        if self.skip_truncated:
+            truncated = None
+        else:
+            truncated = _findNode(element, 'truncated', parse=int)
+
+        if self.skip_difficult:
+            difficult = None
+        else:    
+            difficult = _findNode(element, 'difficult', parse=int)
 
         class_name = _findNode(element, 'name').text
         if class_name not in self.classes:
@@ -128,6 +162,10 @@ class PascalVocGenerator(Generator):
         box[0, 1] = _findNode(bndbox, 'ymin', 'bndbox.ymin', parse=float) - 1
         box[0, 2] = _findNode(bndbox, 'xmax', 'bndbox.xmax', parse=float) - 1
         box[0, 3] = _findNode(bndbox, 'ymax', 'bndbox.ymax', parse=float) - 1
+        if box[0, 0] < 0:
+            box[0, 0] = 0
+        if box[0, 1] < 0:
+            box[0, 1] = 0
 
         return truncated, difficult, box
 

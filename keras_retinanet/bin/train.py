@@ -118,7 +118,8 @@ def create_callbacks(model, training_model, prediction_model, validation_generat
 
 def create_generators(args):
     # create random transform generator for augmenting training data
-    transform_generator = random_transform_generator(flip_x_chance=0.5)
+    # transform_generator = random_transform_generator(flip_x_chance=0.5)
+    transform_generator = random_transform_generator()
 
     if args.dataset_type == 'coco':
         # import here to prevent unnecessary dependency on cocoapi
@@ -141,13 +142,21 @@ def create_generators(args):
             args.pascal_path,
             'trainval',
             transform_generator=transform_generator,
-            batch_size=args.batch_size
+            batch_size=args.batch_size,
+            skip_truncated=True,
+            skip_difficult=True,
+            image_min_side=512,
+            image_max_side=512
         )
 
         validation_generator = PascalVocGenerator(
             args.pascal_path,
             'test',
-            batch_size=args.batch_size
+            batch_size=args.batch_size,
+            skip_truncated=True,
+            skip_difficult=True,
+            image_min_side=512,
+            image_max_side=512
         )
     elif args.dataset_type == 'csv':
         train_generator = CSVGenerator(

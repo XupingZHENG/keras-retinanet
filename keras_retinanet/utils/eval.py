@@ -111,7 +111,10 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
             draw_annotations(raw_image, generator.load_annotations(i), generator=generator)
             draw_detections(raw_image, detections[0, indices[0][scores_sort], :], generator=generator)
 
-            cv2.imwrite(os.path.join(save_path, '{}.png'.format(i)), raw_image)
+            if hasattr(generator, 'image_names'):
+                cv2.imwrite(os.path.join(save_path, '{}.jpg'.format(generator.image_names[i])), raw_image)
+            else:
+                cv2.imwrite(os.path.join(save_path, '{}.jpg'.format(i)), raw_image)
 
         # copy detections to all_detections
         for label in range(generator.num_classes()):
